@@ -1,6 +1,8 @@
 local fn = vim.fn
 local utils = require "nvim-treesitter.utils"
 
+local is_msys = os.getenv("MSYSTEM") ~= nil
+
 -- Convert path for cmd.exe on Windows.
 -- This is needed when vim.opt.shellslash is in use.
 ---@param p string
@@ -22,7 +24,7 @@ local M = {}
 ---@param info_msg string
 ---@return table
 function M.select_mkdir_cmd(directory, cwd, info_msg)
-  if fn.has "win32" == 1 then
+  if fn.has "win32" == 1 and not is_msys then
     return {
       cmd = "cmd",
       opts = {
@@ -50,7 +52,7 @@ end
 ---@param info_msg string
 ---@return table
 function M.select_rm_file_cmd(file, info_msg)
-  if fn.has "win32" == 1 then
+  if fn.has "win32" == 1 and not is_msys then
     return {
       cmd = "cmd",
       opts = {
@@ -177,7 +179,7 @@ end
 ---@param project_name string
 ---@return Command
 function M.select_install_rm_cmd(cache_folder, project_name)
-  if fn.has "win32" == 1 then
+  if fn.has "win32" == 1 and not is_msys then
     local dir = cache_folder .. "\\" .. project_name
     return {
       cmd = "cmd",
@@ -201,7 +203,7 @@ end
 ---@param cwd string
 ---@return Command
 function M.select_mv_cmd(from, to, cwd)
-  if fn.has "win32" == 1 then
+  if fn.has "win32" == 1 and not is_msys then
     return {
       cmd = "cmd",
       opts = {
@@ -321,7 +323,7 @@ end
 ---@param command string
 ---@return string command
 function M.make_directory_change_for_command(dir, command)
-  if fn.has "win32" == 1 then
+  if fn.has "win32" == 1 and not is_msys then
     if string.find(vim.o.shell, "cmd") ~= nil then
       return string.format("pushd %s & %s & popd", cmdpath(dir), command)
     else
